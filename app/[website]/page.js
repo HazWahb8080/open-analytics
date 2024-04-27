@@ -34,12 +34,31 @@ function WebsitePage() {
         .eq("website_name", website)
         .eq("user_id", user.id);
       // if not go to the dashboard if yeas send other request to get the views
-      data.length == 0 ? router.push("/dashboard") : fetchViews();
+      data.length == 0
+        ? router.push("/dashboard")
+        : setTimeout(() => {
+            fetchViews();
+          }, 500);
     };
     checkWebsiteCurrentUser();
   }, [user]);
+  const abbreviateNumber = (number) => {
+    if (number >= 1000000) {
+      return (number / 1000000).toFixed(1) + "M";
+    } else if (number >= 1000) {
+      return (number / 1000).toFixed(1) + "K";
+    } else {
+      return number.toString();
+    }
+  };
   if (loading) {
-    return <Wrapper></Wrapper>;
+    return (
+      <Wrapper>
+        <div className="min-h-screen w-full items-center justify-center flex text-white">
+          loading...
+        </div>
+      </Wrapper>
+    );
   }
   return (
     <Wrapper>
@@ -50,10 +69,13 @@ function WebsitePage() {
         >
           <div
             className="z-40 w-full lg:w-2/3 bg-black border border-white/5 py-12 px-8 
-        items-center justify-center flex flex-col text-white space-y-4"
+        items-center justify-center flex flex-col text-white space-y-4 relative"
           >
             <p className="bg-green-600 rounded-full p-4 animate-pulse" />
             <p className="animate-pulse">waiting for the first page view</p>
+            <button className="button" onClick={() => window.location.reload()}>
+              refresh
+            </button>
           </div>
           <div className="w-3/4 md:w-[50%] z-40 fixed bottom-4">
             <textarea
@@ -82,7 +104,9 @@ function WebsitePage() {
               <p className="font-bold py-4  w-full text-center border-b border-white/5">
                 TOTAL VISITS
               </p>
-              <p className="py-8 text-3xl bg-[#050505]">{pageViews?.length}</p>
+              <p className="py-8 text-3xl bg-[#050505]">
+                {abbreviateNumber(pageViews?.length)}
+              </p>
             </div>
           </div>
         </div>

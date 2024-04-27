@@ -9,16 +9,40 @@
 
   var endpoint = "http://localhost:3000/api/track";
 
+  // Retrieve or generate a session ID
+  var sessionId = getSessionId();
+
+  function getSessionId() {
+    var storedSessionId = localStorage.getItem("session_id");
+    if (storedSessionId) {
+      return storedSessionId;
+    } else {
+      // Generate a new session ID if not already stored
+      var newSessionId = generateSessionId();
+      localStorage.setItem("session_id", newSessionId);
+      trackSessionStart();
+      return newSessionId;
+    }
+  }
+
+  function generateSessionId() {
+    // Generate a random session ID
+    return "session-" + Math.random().toString(36).substr(2, 9);
+  }
+
+  // Function to send tracking events to the endpoint
   function trigger(eventName, options) {
     var payload = {
       event: eventName,
       url: location.href,
       domain: dataDomain,
+      sessionId: sessionId,
     };
 
     sendRequest(payload, options);
   }
 
+  // Function to send HTTP requests
   function sendRequest(payload, options) {
     var request = new XMLHttpRequest();
     request.open("POST", endpoint, true);
@@ -33,31 +57,26 @@
     request.send(JSON.stringify(payload));
   }
 
+  // Queue of tracking events
   var queue = (window.your_tracking && window.your_tracking.q) || [];
   window.your_tracking = trigger;
   for (var i = 0; i < queue.length; i++) {
     trigger.apply(this, queue[i]);
   }
 
-  var lastPage;
-
-  function page() {
-    if (lastPage === location.pathname) return;
-    lastPage = location.pathname;
+  // Function to track page views
+  function trackPageView() {
+    // Trigger a custom event indicating page view
     trigger("pageview");
   }
-
-  window.addEventListener("popstate", page);
-
-  function handleVisibilityChange() {
-    if (!lastPage && document.visibilityState === "visible") {
-      page();
-    }
+  function trackSessionStart() {
+    // Trigger a custom event indicating page view
+    trigger("session_start");
   }
 
-  if (document.visibilityState === "prerender") {
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-  } else {
-    page();
-  }
+  // Track page view when the script is loaded
+  trackPageView();
+
+  // Event listener for popstate (back/forward navigation)
+  window.addEventListener("popstate", trackPageView);
 })();
