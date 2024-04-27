@@ -16,7 +16,7 @@ function Header() {
   const [user] = useUser();
   return (
     <div
-      className="w-full border-b border-white/5 fixed top-0 bg-black z-50
+      className="w-full border-b border-white/5 sticky top-0 bg-black z-50
       bg-opacity-20 filter backdrop-blur-lg flex items-center justify-between px-6 py-3"
     >
       <Logo size="sm" />

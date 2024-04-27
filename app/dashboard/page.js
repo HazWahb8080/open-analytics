@@ -5,13 +5,11 @@ import Wrapper from "../comps/Wrapper";
 import Header from "../comps/Header";
 import supabase from "@/config/Supabase_Client";
 import useUser from "@/hooks/useUser";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 function DashboardPage() {
   const [user] = useUser();
   const [websites, setWebsites] = useState([]);
-  const router = useRouter();
   const fetchWebsites = async () => {
     const { data, error } = await supabase
       .from("websites")
@@ -28,10 +26,10 @@ function DashboardPage() {
   return (
     <Wrapper>
       <Header />
-      <div className="w-full items-center justify-center flex flex-col h-full py-12">
+      <div className="w-full items-start justify-start flex flex-col min-h-screen">
         <div
           className="w-full items-center justify-end flex p-6
-       border-b border-white/5 z-40 mt-12"
+       border-b border-white/5 z-40"
         >
           <Link href={"/add"} prefetch>
             <button className="button"> + add website</button>
