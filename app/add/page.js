@@ -4,6 +4,7 @@ import Wrapper from "../comps/Wrapper";
 import supabase from "@/config/Supabase_Client";
 import useUser from "@/hooks/useUser";
 import { useRouter } from "next/navigation";
+import Logo from "../comps/Logo";
 
 function OnBoardingPage() {
   const [website, setWebsite] = useState("");
@@ -24,10 +25,7 @@ function OnBoardingPage() {
   };
   return (
     <Wrapper>
-      <h1 className="text-white/80 text-2xl py-10">
-        Open{" "}
-        <b className="italic font-light font-mono text-[#777777]">Analytics.</b>
-      </h1>
+      <Logo size="lg" />
       <div
         className="items-center justify-center p-12
       flex flex-col w-full md:w-3/4 z-50 border-y
