@@ -13,7 +13,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <Script
-        data-domain="dayrh4.com"
+        data-domain="dayrh.com"
         src="http://localhost:3000/tracking-script.js"
       />
       <body className={inter.className}>{children}</body>

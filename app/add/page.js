@@ -58,7 +58,7 @@ function OnBoardingPage() {
                 type="text"
                 className="input text-white/20 cursor-pointer"
                 disabled
-                value={`<script defer data-domain="${website}" src="https://plausible.io/js/script.js"></script>`}
+                value={`<script defer data-domain="${website}" src="http://localhost:3000/tracking-script.js"></script>`}
               />
               <p className="text-xs text-white/20 pt-2 font-light">
                 Paste this snippet in the{" "}
