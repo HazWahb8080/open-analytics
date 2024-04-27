@@ -10,13 +10,16 @@ function WebsitePage() {
   const { website } = useParams();
   const [user] = useUser();
   const router = useRouter();
-  const [pageViews, setPageViews] = useState();
+  const [pageViews, setPageViews] = useState([]);
+  const [loading, setLoading] = useState(true);
   const fetchViews = async () => {
+    setLoading(true);
     const { data, error } = await supabase
       .from("page_views")
       .select()
       .eq("domain", website);
     setPageViews(data);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -35,15 +38,55 @@ function WebsitePage() {
     };
     checkWebsiteCurrentUser();
   }, [user]);
+  if (loading) {
+    return <Wrapper></Wrapper>;
+  }
   return (
     <Wrapper>
-      <div className="z-40">
-        <h2 className="text-white">{website}</h2>
-        <h2 className="text-white">total View is {pageViews?.length}</h2>
-        <button onClick={fetchViews} className="button">
-          refresh
-        </button>
-      </div>
+      {pageViews.length == 0 && !loading ? (
+        <div
+          className="w-full items-center justify-center flex
+         flex-col space-y-6 z-40 relative min-h-screen px-4"
+        >
+          <div
+            className="z-40 w-full lg:w-2/3 bg-black border border-white/5 py-12 px-8 
+        items-center justify-center flex flex-col text-white space-y-4"
+          >
+            <p className="bg-green-600 rounded-full p-4 animate-pulse" />
+            <p className="animate-pulse">waiting for the first page view</p>
+          </div>
+          <div className="w-3/4 md:w-[50%] z-40 fixed bottom-4">
+            <textarea
+              type="text"
+              className="input text-white/20 cursor-pointer"
+              disabled
+              value={`<script defer data-domain="${website}" src="http://localhost:3000/tracking-script.js"></script>`}
+            />
+            <p className="text-xs text-white/20 pt-2 font-light">
+              Paste this snippet in the{" "}
+              <b className="text-red-600">{"<head>"}</b> of your website.
+            </p>
+          </div>
+        </div>
+      ) : (
+        // let's monitor
+        <div className="z-40 w-full min-h-screen py-6 px-6 items-center justify-start flex flex-col">
+          <button
+            className="fixed z-50 top-3 right-3 text-white"
+            onClick={fetchViews}
+          >
+            refresh
+          </button>
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 w-full gap-6">
+            <div className="bg-black border-white/5 border text-white text-center">
+              <p className="font-bold py-4  w-full text-center border-b border-white/5">
+                TOTAL VISITS
+              </p>
+              <p className="py-8 text-3xl bg-[#050505]">{pageViews?.length}</p>
+            </div>
+          </div>
+        </div>
+      )}
     </Wrapper>
   );
 }
