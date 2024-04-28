@@ -62,7 +62,7 @@ function SettingsPage() {
   };
   const eventData = {
     name: "Churned Users",
-    domain: "dayrh.com",
+    domain: "dayrh2.com",
   };
 
   const sendRequest = async () => {
