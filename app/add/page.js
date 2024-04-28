@@ -1,5 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Wrapper from "../comps/Wrapper";
 import supabase from "@/config/Supabase_Client";
 import useUser from "@/hooks/useUser";
@@ -12,6 +13,7 @@ function OnBoardingPage() {
   const [user] = useUser();
   const [step, setStep] = useState(1);
   const router = useRouter();
+  const [error, setError] = useState("");
 
   const addWebsite = async () => {
     if (website.trim() == "" || loading) return;
@@ -23,6 +25,22 @@ function OnBoardingPage() {
     setLoading(false);
     setStep(2);
   };
+  const checkDomainAddedBefore = async () => {
+    let fetchedWebites = [];
+    const { data: websites, error } = await supabase
+      .from("websites")
+      .select("*");
+    fetchedWebites = websites;
+
+    if (
+      fetchedWebites.filter((item) => item.website_name == website).length > 0 // this means we have duplicates
+    ) {
+      setError("this domain is added before");
+    } else {
+      addWebsite();
+    }
+  };
+
   return (
     <Wrapper>
       <Logo size="lg" />
@@ -43,11 +61,17 @@ function OnBoardingPage() {
                 type="text"
                 className="input"
               />
-              <p className="text-xs text-white/20 pt-2 font-light">
-                enter the domain or subdomain without {"www"}
-              </p>
+              {error ? (
+                <p className="text-xs text-white/20 pt-2 font-light text-red-300">
+                  {error}
+                </p>
+              ) : (
+                <p className="text-xs text-white/20 pt-2 font-light">
+                  enter the domain or subdomain without {"www"}
+                </p>
+              )}
             </span>
-            <button className="button" onClick={addWebsite}>
+            <button className="button" onClick={checkDomainAddedBefore}>
               {loading ? "adding..." : "add website"}
             </button>
           </div>

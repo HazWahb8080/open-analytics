@@ -25,7 +25,6 @@ function WebsitePage() {
       .select()
       .eq("website_name", website);
     setTotalVisits(visits[0]?.total_visits);
-    console.log(visits);
     setLoading(false);
   };
 
