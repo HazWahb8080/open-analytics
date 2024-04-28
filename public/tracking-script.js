@@ -25,7 +25,7 @@
       sessionId = generateSessionId();
 
       // Set the expiration timestamp
-      expirationTimestamp = Date.now() + 10 * 60 * 1000;
+      expirationTimestamp = Date.now() + 10 * 60 * 1000; // 10 minutes
 
       // Store the session ID and expiration timestamp in localStorage
       localStorage.setItem("session_id", sessionId);
@@ -49,6 +49,8 @@
       localStorage.removeItem("session_id");
       localStorage.removeItem("session_expiration_timestamp");
       trackSessionEnd();
+      // if visitor landed on the website after expiration we need to create new session in order to count it as a new visit.
+      initializeSession();
     }
   }
 

@@ -13,6 +13,7 @@ function WebsitePage() {
   const [pageViews, setPageViews] = useState([]);
   const [totalVisits, setTotalVisits] = useState();
   const [loading, setLoading] = useState(true);
+  const [groupedPageViews, setGroupedPageViews] = useState([]);
   const fetchViews = async () => {
     setLoading(true);
     const { data: views } = await supabase
@@ -20,6 +21,8 @@ function WebsitePage() {
       .select()
       .eq("domain", website);
     setPageViews(views);
+    setGroupedPageViews(groupPageViews(views));
+
     const { data: visits } = await supabase
       .from("websites")
       .select()
@@ -57,6 +60,23 @@ function WebsitePage() {
       return number.toString();
     }
   };
+  function groupPageViews(pageViews) {
+    const groupedPageViews = {};
+
+    pageViews.forEach(({ page }) => {
+      // Extract the path from the page URL by removing the protocol and hostname
+      const path = page.replace(/^(?:\/\/|[^/]+)*\//, "");
+
+      // Increment the visit count for the page path
+      groupedPageViews[path] = (groupedPageViews[path] || 0) + 1;
+    });
+
+    return Object.keys(groupedPageViews).map((page) => ({
+      page: page,
+      visits: groupedPageViews[page],
+    }));
+  }
+
   if (loading) {
     return (
       <Wrapper>
@@ -122,6 +142,13 @@ function WebsitePage() {
                 {abbreviateNumber(pageViews?.length)}
               </p>
             </div>
+          </div>
+          <div className="flex flex-col space-y-6">
+            {groupedPageViews.map((view) => (
+              <div key={view} className="text-white">
+                {view.page} visited {view.visits}
+              </div>
+            ))}
           </div>
         </div>
       )}
