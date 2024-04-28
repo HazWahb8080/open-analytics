@@ -13,8 +13,8 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <Script
-        data-domain="dayrh.com"
-        src="http://localhost:3000/tracking-script.js"
+        data-domain="hazembuilds.com"
+        src="https://openAnalytics.hazembuilds.com/tracking-script.js"
       />
       <body className={inter.className}>{children}</body>
     </html>
