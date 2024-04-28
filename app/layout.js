@@ -14,7 +14,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <Script
         data-domain="hazembuilds.com"
-        src="https://openAnalytics.hazembuilds.com/tracking-script.js"
+        src="https://open-analytics-eosin.vercel.app/tracking-script.js"
       />
       <body className={inter.className}>{children}</body>
     </html>
