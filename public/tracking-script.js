@@ -1,5 +1,5 @@
 (function () {
-  "use strict";
+  ("use strict");
 
   var location = window.location;
   var document = window.document;
@@ -73,10 +73,42 @@
     // Trigger a custom event indicating page view
     trigger("session_start");
   }
+  function trackSessionEnd() {
+    trigger("session_end");
+  }
 
   // Track page view when the script is loaded
   trackPageView();
 
   // Event listener for popstate (back/forward navigation)
   window.addEventListener("popstate", trackPageView);
+
+  var inactivityTimeoutDuration = 1 * 10 * 1000;
+
+  var lastActivityTimestamp = Date.now();
+
+  // Function to check for inactivity and end session if necessary
+  function checkInactivity() {
+    var currentTime = Date.now();
+    var elapsedTime = currentTime - lastActivityTimestamp;
+
+    if (elapsedTime >= inactivityTimeoutDuration) {
+      // Inactivity timeout reached, end session
+      // Remove the session ID from localStorage
+      localStorage.removeItem("session_id");
+      trackSessionEnd();
+    }
+  }
+
+  // Event listener for user activity (e.g., mouse movement, keypress)
+  document.addEventListener("mousemove", function () {
+    lastActivityTimestamp = Date.now();
+  });
+
+  document.addEventListener("keypress", function () {
+    lastActivityTimestamp = Date.now();
+  });
+
+  // Check for inactivity periodically
+  setInterval(checkInactivity, 10000); // Check every minute
 })();
