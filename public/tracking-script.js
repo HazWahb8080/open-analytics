@@ -11,7 +11,7 @@
   const params = new URLSearchParams(queryString);
   var source = params.get("utm");
 
-  var endpoint = "http://localhost:3000/api/track";
+  var endpoint = "https://hazembuilds.com/api/track";
 
   function generateSessionId() {
     // Generate a random session ID
@@ -110,7 +110,17 @@
 
   // Track page view when the script is loaded
   trackPageView();
+  var initialPathname = window.location.pathname;
 
   // Event listener for popstate (back/forward navigation)
   window.addEventListener("popstate", trackPageView);
+  // Event listener for hashchange (hash-based navigation)
+  window.addEventListener("hashchange", trackPageView);
+  document.addEventListener("click", function (event) {
+    if (window.location.pathname !== initialPathname) {
+      trackPageView();
+      // Update the initialPathname for future comparisons
+      initialPathname = window.location.pathname;
+    }
+  });
 })();

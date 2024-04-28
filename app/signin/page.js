@@ -11,7 +11,6 @@ function SignInPage() {
   const signIn = async () => {
     await supabase.auth.signInWithOAuth({
       provider: "google",
-      // options: { redirectTo: `https://${window.location.hostname}/dashboard` },
     });
   };
   //   check if the user is logged in already and redirect if necassary
