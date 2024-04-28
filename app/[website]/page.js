@@ -7,6 +7,7 @@ import supabase from "@/config/Supabase_Client";
 import useUser from "@/hooks/useUser";
 import Header from "../comps/Header";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 function WebsitePage() {
   const { website } = useParams();
@@ -14,9 +15,11 @@ function WebsitePage() {
   const router = useRouter();
   const [pageViews, setPageViews] = useState([]);
   const [totalVisits, setTotalVisits] = useState();
+  const [customEvents, setCustomEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [groupedPageViews, setGroupedPageViews] = useState([]);
   const [groupedPageSources, setGroupedPageSources] = useState([]);
+  const [activeTab, setActiveTab] = useState("general");
   useEffect(() => {
     //   make sure the user is loggedin first
     if (!user) return;
@@ -39,20 +42,38 @@ function WebsitePage() {
   }, [user]);
   const fetchViews = async () => {
     setLoading(true);
-    const { data: views } = await supabase
-      .from("page_views")
-      .select()
-      .eq("domain", website);
-    setPageViews(views);
-    setGroupedPageViews(groupPageViews(views));
+    try {
+      // Send multiple requests in parallel using Promise.all()
+      const [viewsResponse, visitsResponse, customEventsResponse] =
+        await Promise.all([
+          supabase.from("page_views").select().eq("domain", website),
+          supabase.from("visits").select().eq("website_id", website),
+          supabase.from("events").select().eq("website_id", website),
+        ]);
 
-    const { data: visits } = await supabase
-      .from("visits")
-      .select()
-      .eq("website_id", website);
-    setTotalVisits(visits);
-    setGroupedPageSources(groupPageSources(visits));
-    setLoading(false);
+      // Extract data from responses
+      const views = viewsResponse.data;
+      const visits = visitsResponse.data;
+      const customEventsData = customEventsResponse.data;
+
+      // Update state with the fetched data
+      setPageViews(views);
+      setGroupedPageViews(groupPageViews(views));
+      setTotalVisits(visits);
+      setGroupedPageSources(groupPageSources(visits));
+      // grouping the customEvent by name
+      setCustomEvents(
+        customEventsData.reduce((acc, event) => {
+          acc[event.event_name] = (acc[event.event_name] || 0) + 1;
+          return acc;
+        }, {})
+      );
+    } catch (error) {
+      // Handle errors
+      console.error("Error fetching views:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // handle the format of the numbers/counts
@@ -98,12 +119,11 @@ function WebsitePage() {
   }
 
   useEffect(() => {
-    if (typeof window !== "undefined" || !supabase || !website) {
-      // refreshing the page after 30 seconds to pull updated numbers
-      setInterval(() => {
-        fetchViews();
-      }, 30000);
-    }
+    if (!supabase || !website) return;
+    // refreshing the page after 30 seconds to pull updated numbers
+    setInterval(() => {
+      fetchViews();
+    }, 30000);
   }, [website, supabase]);
 
   if (loading) {
@@ -156,24 +176,65 @@ function WebsitePage() {
           >
             <ArrowPathIcon className="h-4 w-4 stroke-white/60 hover:stroke-white smooth" />
           </button>
-          <div className="grid grid-cols-1 md:grid-cols-2 w-full lg:w-3/4 gap-6 pt-12 px-6">
-            <div className="bg-black border-white/5 border text-white text-center">
-              <p className="text-white/70 font-medium py-8 w-full text-center border-b border-white/5">
-                TOTAL VISITS
-              </p>
-              <p className="py-12 text-3xl lg:text-4xl font-bold bg-[#050505]">
-                {abbreviateNumber(totalVisits.length)}
-              </p>
-            </div>
-            <div className="bg-black border-white/5 border text-white text-center">
-              <p className="font-medium text-white/70 py-8  w-full text-center border-b border-white/5">
-                Page Views
-              </p>
-              <p className="py-12 text-3xl lg:text-4xl font-bold bg-[#050505]">
-                {abbreviateNumber(pageViews?.length)}
-              </p>
-            </div>
+          <div className="w-3/4 lg:w-2/3 items-center justify-center flex">
+            <Tabs
+              defaultValue="general"
+              className="w-full items-center justify-center flex flex-col"
+            >
+              <TabsList className="w-full bg-transparent mb-4 items-start justify-start flex">
+                <TabsTrigger value="general">general</TabsTrigger>
+                <TabsTrigger value="custom Events">custom Events</TabsTrigger>
+              </TabsList>
+              <TabsContent className="w-full" value="general">
+                <div
+                  className="w-full grid grid-cols-1 md:grid-cols-2
+           gap-6"
+                >
+                  <div className="bg-black border-white/5 border text-white text-center">
+                    <p className="text-white/70 font-medium py-8 w-full text-center border-b border-white/5">
+                      TOTAL VISITS
+                    </p>
+                    <p className="py-12 text-3xl lg:text-4xl font-bold bg-[#050505]">
+                      {abbreviateNumber(totalVisits.length)}
+                    </p>
+                  </div>
+                  <div className="bg-black border-white/5 border text-white text-center">
+                    <p className="font-medium text-white/70 py-8  w-full text-center border-b border-white/5">
+                      Page Views
+                    </p>
+                    <p className="py-12 text-3xl lg:text-4xl font-bold bg-[#050505]">
+                      {abbreviateNumber(pageViews?.length)}
+                    </p>
+                  </div>
+                </div>
+              </TabsContent>
+              <TabsContent className="w-full" value="custom Events">
+                <div
+                  className="w-full grid grid-cols-1 md:grid-cols-2 
+          gap-6"
+                >
+                  {customEvents &&
+                    Object.entries(customEvents).map(([eventName, count]) => (
+                      <div
+                        key={eventName}
+                        className="bg-black border-white/5 border text-white text-center"
+                      >
+                        <p
+                          className="text-white/70 font-medium py-8
+                       w-full text-center border-b border-white/5"
+                        >
+                          {eventName}
+                        </p>
+                        <p className="py-12 text-3xl lg:text-4xl font-bold bg-[#050505]">
+                          {count}
+                        </p>
+                      </div>
+                    ))}
+                </div>
+              </TabsContent>
+            </Tabs>
           </div>
+
           <div
             className="items-center justify-center grid grid-cols-1 bg-black 
            lg:grid-cols-2 mt-12 w-full lg:w-3/4 border-y border-white/5"

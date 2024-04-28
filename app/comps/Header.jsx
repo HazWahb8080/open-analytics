@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import Logo from "./Logo";
 import {
   DropdownMenu,
@@ -13,11 +13,22 @@ import {
 import useUser from "@/hooks/useUser";
 import Link from "next/link";
 import { ArrowLeftIcon } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import supabase from "@/config/Supabase_Client";
 
 function Header() {
   const [user] = useUser();
   const pathname = usePathname();
+  const router = useRouter();
+  const logOut = async () => {
+    await supabase.auth.signOut();
+    router.push("/signin");
+  };
+
+  if (user == "no user") {
+    return <></>;
+  }
+
   return (
     <div
       className="w-full border-b border-white/5 sticky top-0 bg-black z-50
@@ -47,7 +58,6 @@ function Header() {
               <img
                 className="h-8 w-8 rounded-full"
                 src={user?.user_metadata.avatar_url}
-                s
                 alt="name"
               />
             </div>
@@ -60,12 +70,15 @@ function Header() {
               My Account
             </DropdownMenuLabel>
             <DropdownMenuSeparator className="bg-white/5" />
-            <DropdownMenuItem
-              className="text-white/60
+            <Link href="/settings" prefetch>
+              <DropdownMenuItem
+                className="text-white/60
              smooth cursor-pointer rounded-md"
-            >
-              Profile
-            </DropdownMenuItem>
+              >
+                settings
+              </DropdownMenuItem>
+            </Link>
+
             <DropdownMenuItem
               className="text-white/60
              smooth cursor-pointer rounded-md"
@@ -78,11 +91,13 @@ function Header() {
             >
               Team
             </DropdownMenuItem>
+            <DropdownMenuSeparator className="bg-white/5" />
             <DropdownMenuItem
+              onClick={logOut}
               className="text-white/60
              smooth cursor-pointer rounded-md"
             >
-              Subscription
+              Log out
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

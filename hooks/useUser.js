@@ -8,7 +8,7 @@ function useUser() {
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    setCurrentUser(user);
+    setCurrentUser(user ?? "no user");
   };
   useEffect(() => {
     if (!supabase) return;

@@ -62,7 +62,10 @@ function OnBoardingPage() {
                 className="input"
               />
               {error ? (
-                <p className="text-xs text-white/20 pt-2 font-light text-red-300">
+                <p
+                  className="text-xs text-white/20 pt-2 font-light
+                 text-red-400"
+                >
                   {error}
                 </p>
               ) : (

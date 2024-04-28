@@ -31,6 +31,9 @@
     @apply outline-none border-b border-white/10 w-full py-2 pr-4
      placeholder:text-white/20 bg-transparent hover:border-white/50 smooth;
   }
+  .input-disabled {
+    @apply outline-none border-b border-white/10 w-full px-4 py-1 bg-[#0c0c0c];
+  }
   .label {
     @apply text-white text-white/70 py-6 
               w-full text-center border-b border-white/5;
