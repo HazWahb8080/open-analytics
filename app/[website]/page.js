@@ -14,23 +14,7 @@ function WebsitePage() {
   const [totalVisits, setTotalVisits] = useState();
   const [loading, setLoading] = useState(true);
   const [groupedPageViews, setGroupedPageViews] = useState([]);
-  const fetchViews = async () => {
-    setLoading(true);
-    const { data: views } = await supabase
-      .from("page_views")
-      .select()
-      .eq("domain", website);
-    setPageViews(views);
-    setGroupedPageViews(groupPageViews(views));
-
-    const { data: visits } = await supabase
-      .from("websites")
-      .select()
-      .eq("website_name", website);
-    setTotalVisits(visits[0]?.total_visits);
-    setLoading(false);
-  };
-
+  const [groupedPageSources, setGroupedPageSources] = useState([]);
   useEffect(() => {
     //   make sure the user is loggedin first
     if (!user) return;
@@ -51,6 +35,25 @@ function WebsitePage() {
     };
     checkWebsiteCurrentUser();
   }, [user]);
+  const fetchViews = async () => {
+    setLoading(true);
+    const { data: views } = await supabase
+      .from("page_views")
+      .select()
+      .eq("domain", website);
+    setPageViews(views);
+    setGroupedPageViews(groupPageViews(views));
+
+    const { data: visits } = await supabase
+      .from("visits")
+      .select()
+      .eq("website_id", website);
+    setTotalVisits(visits);
+    setGroupedPageSources(groupPageSources(visits));
+    setLoading(false);
+  };
+
+  // handle the format of the numbers/counts
   const abbreviateNumber = (number) => {
     if (number >= 1000000) {
       return (number / 1000000).toFixed(1) + "M";
@@ -60,6 +63,8 @@ function WebsitePage() {
       return number.toString();
     }
   };
+
+  // group the page views with paths
   function groupPageViews(pageViews) {
     const groupedPageViews = {};
 
@@ -76,12 +81,37 @@ function WebsitePage() {
       visits: groupedPageViews[page],
     }));
   }
+  // group the sources with paths
+  function groupPageSources(visits) {
+    const groupedPageSources = {};
+
+    visits.forEach(({ source }) => {
+      groupedPageSources[source] = (groupedPageSources[source] || 0) + 1;
+    });
+
+    return Object.keys(groupedPageSources).map((source) => ({
+      source: source,
+      visits: groupedPageSources[source],
+    }));
+  }
+
+  useEffect(() => {
+    if (typeof window !== "undefined" || !supabase || !website) {
+      // refreshing the page after 30 seconds to pull updated numbers
+      setInterval(() => {
+        fetchViews();
+      }, 30000);
+    }
+  }, [website, supabase]);
 
   if (loading) {
     return (
       <Wrapper>
-        <div className="min-h-screen w-full items-center justify-center flex text-white">
+        <div className="min-h-screen w-full items-center justify-center flex text-white relative">
           loading...
+          <button className="fixed z-50 top-3 right-3 text-white">
+            refreshing...
+          </button>
         </div>
       </Wrapper>
     );
@@ -118,20 +148,20 @@ function WebsitePage() {
         </div>
       ) : (
         // let's monitor
-        <div className="z-40 w-full min-h-screen py-6 px-6 items-center justify-start flex flex-col">
+        <div className="z-40 w-full min-h-screen py-6 items-center justify-start flex flex-col">
           <button
             className="fixed z-50 top-3 right-3 text-white"
             onClick={fetchViews}
           >
             refresh
           </button>
-          <div className="grid grid-cols-1 md:grid-cols-2 w-full lg:w-3/4 gap-6 pt-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 w-full lg:w-3/4 gap-6 pt-12 px-6">
             <div className="bg-black border-white/5 border text-white text-center">
               <p className="text-white/70 font-medium py-8 w-full text-center border-b border-white/5">
                 TOTAL VISITS
               </p>
               <p className="py-12 text-3xl lg:text-4xl font-bold bg-[#050505]">
-                {abbreviateNumber(totalVisits)}
+                {abbreviateNumber(totalVisits.length)}
               </p>
             </div>
             <div className="bg-black border-white/5 border text-white text-center">
@@ -143,12 +173,50 @@ function WebsitePage() {
               </p>
             </div>
           </div>
-          <div className="flex flex-col space-y-6">
-            {groupedPageViews.map((view) => (
-              <div key={view} className="text-white">
-                {view.page} visited {view.visits}
-              </div>
-            ))}
+          <div
+            className="items-center justify-center grid grid-cols-1 bg-black 
+           lg:grid-cols-2 mt-12 w-full lg:w-3/4 border-y border-white/5"
+          >
+            {/* top pages */}
+            <div className="flex flex-col bg-black z-40 h-full w-full">
+              <h1 className="label">Top Pages</h1>
+              {groupedPageViews.map((view) => (
+                <div
+                  key={view}
+                  className="text-white w-full items-center justify-between 
+                  px-6 py-4 border-b border-white/5 flex"
+                >
+                  <p className="text-white/70 font-light">/{view.page}</p>
+                  <p className="">{abbreviateNumber(view.visits)}</p>
+                </div>
+              ))}
+            </div>
+            {/* top sources */}
+            <div
+              className="flex flex-col bg-black z-40 h-full w-full
+             lg:border-l border-t lg:border-t-0 border-white/5"
+            >
+              <h1 className="label relative">
+                Top Visit Sources
+                <p className="absolute bottom-2 right-2 text-[10px] italic font-light">
+                  add ?utm={"{source}"} to track
+                </p>
+              </h1>
+              {groupedPageSources.map((pageSource) => (
+                <div
+                  key={pageSource}
+                  className="text-white w-full items-center justify-between 
+                  px-6 py-4 border-b border-white/5 flex"
+                >
+                  <p className="text-white/70 font-light">
+                    /{pageSource.source}
+                  </p>
+                  <p className="text-white/70 font-light">
+                    <p className="">{abbreviateNumber(pageSource.visits)}</p>
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}

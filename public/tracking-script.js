@@ -6,6 +6,10 @@
 
   var scriptElement = document.currentScript;
   var dataDomain = scriptElement.getAttribute("data-domain");
+  // we get the utm query in order to track the source of each visit
+  let queryString = location.search;
+  const params = new URLSearchParams(queryString);
+  var source = params.get("utm");
 
   var endpoint = "http://localhost:3000/api/track";
 
@@ -63,6 +67,7 @@
       event: eventName,
       url: location.href,
       domain: dataDomain,
+      source,
     };
 
     sendRequest(payload, options);
