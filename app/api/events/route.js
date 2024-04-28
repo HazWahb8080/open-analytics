@@ -1,6 +1,15 @@
 import supabase from "@/config/Supabase_Client";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
+export const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+};
+
+export async function OPTIONS(request) {
+  return NextResponse.json({}, { headers: corsHeaders });
+}
 
 export async function POST(req) {
   try {
@@ -22,9 +31,17 @@ export async function POST(req) {
             },
           ]);
         if (errorMessage) {
-          return NextResponse.json({ error: errorMessage }, { status: 400 });
+          return NextResponse.json(
+            { error: errorMessage },
+            { status: 400 },
+            { headers: corsHeaders }
+          );
         } else {
-          return NextResponse.json({ message: "success" }, { status: 200 });
+          return NextResponse.json(
+            { message: "success" },
+            { status: 200 },
+            { headers: corsHeaders }
+          );
         }
       }
     } else {
@@ -34,6 +51,10 @@ export async function POST(req) {
       );
     }
   } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json(
+      { error: error.message },
+      { status: 500 },
+      { headers: corsHeaders }
+    );
   }
 }

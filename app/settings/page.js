@@ -68,7 +68,7 @@ function SettingsPage() {
   const sendRequest = async () => {
     axios
       .post(url, eventData, { headers })
-      .then((response) => {})
+      .then()
       .catch((error) => {
         console.error("Error:", error);
       });
@@ -118,7 +118,6 @@ function SettingsPage() {
             </button>
           </div>
         )}
-        <button onClick={sendRequest}>send</button>
       </div>
     </Wrapper>
   );
