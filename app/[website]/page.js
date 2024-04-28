@@ -5,6 +5,8 @@ import React, { useEffect, useState } from "react";
 import Wrapper from "../comps/Wrapper";
 import supabase from "@/config/Supabase_Client";
 import useUser from "@/hooks/useUser";
+import Header from "../comps/Header";
+import { ArrowPathIcon } from "@heroicons/react/24/outline";
 
 function WebsitePage() {
   const { website } = useParams();
@@ -107,17 +109,16 @@ function WebsitePage() {
   if (loading) {
     return (
       <Wrapper>
+        <Header />
         <div className="min-h-screen w-full items-center justify-center flex text-white relative">
           loading...
-          <button className="fixed z-50 top-3 right-3 text-white">
-            refreshing...
-          </button>
         </div>
       </Wrapper>
     );
   }
   return (
     <Wrapper>
+      <Header />
       {pageViews.length == 0 && !loading ? (
         <div
           className="w-full items-center justify-center flex
@@ -150,10 +151,10 @@ function WebsitePage() {
         // let's monitor
         <div className="z-40 w-full min-h-screen py-6 items-center justify-start flex flex-col">
           <button
-            className="fixed z-50 top-3 right-3 text-white"
+            className="text-white w-full items-end justify-end flex px-12"
             onClick={fetchViews}
           >
-            refresh
+            <ArrowPathIcon className="h-4 w-4 stroke-white/60 hover:stroke-white smooth" />
           </button>
           <div className="grid grid-cols-1 md:grid-cols-2 w-full lg:w-3/4 gap-6 pt-12 px-6">
             <div className="bg-black border-white/5 border text-white text-center">
