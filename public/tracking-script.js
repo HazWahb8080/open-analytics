@@ -11,7 +11,7 @@
   const params = new URLSearchParams(queryString);
   var source = params.get("utm");
 
-  var endpoint = "https://hazembuilds.com/api/track";
+  var endpoint = "https://openanalytics.hazembuilds.com/api/track";
 
   function generateSessionId() {
     // Generate a random session ID

@@ -159,7 +159,7 @@ function WebsitePage() {
               type="text"
               className="input text-white/20 cursor-pointer"
               disabled
-              value={`<script defer data-domain="${website}" src="https://hazembuilds.com/tracking-script.js"></script>`}
+              value={`<script defer data-domain="${website}" src="https://openanalytics.hazembuilds.com/tracking-script.js"></script>`}
             />
             <p className="text-xs text-white/20 pt-2 font-light">
               Paste this snippet in the{" "}

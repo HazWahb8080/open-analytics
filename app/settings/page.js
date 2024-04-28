@@ -53,7 +53,7 @@ function SettingsPage() {
     navigator.clipboard.writeText(apiKey);
     alert("API key copied to clipboard!");
   };
-  const url = "http://localhost:3000/api/events";
+  const url = "https://openanalytics.hazembuilds.com/api/events";
 
   // Example headers (including the API key)
   const headers = {
@@ -118,6 +118,7 @@ function SettingsPage() {
             </button>
           </div>
         )}
+        <button onClick={sendRequest}>send</button>
       </div>
     </Wrapper>
   );
