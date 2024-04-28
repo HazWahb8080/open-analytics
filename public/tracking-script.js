@@ -9,26 +9,51 @@
 
   var endpoint = "http://localhost:3000/api/track";
 
-  // Retrieve or generate a session ID
-  var sessionId = getSessionId();
-
-  function getSessionId() {
-    var storedSessionId = localStorage.getItem("session_id");
-    if (storedSessionId) {
-      return storedSessionId;
-    } else {
-      // Generate a new session ID if not already stored
-      var newSessionId = generateSessionId();
-      localStorage.setItem("session_id", newSessionId);
-      trackSessionStart();
-      return newSessionId;
-    }
-  }
-
   function generateSessionId() {
     // Generate a random session ID
     return "session-" + Math.random().toString(36).substr(2, 9);
   }
+
+  function initializeSession() {
+    var sessionId = localStorage.getItem("session_id");
+    var expirationTimestamp = localStorage.getItem(
+      "session_expiration_timestamp"
+    );
+
+    if (!sessionId || !expirationTimestamp) {
+      // Generate a new session ID
+      sessionId = generateSessionId();
+
+      // Set the expiration timestamp
+      expirationTimestamp = Date.now() + 10 * 60 * 1000;
+
+      // Store the session ID and expiration timestamp in localStorage
+      localStorage.setItem("session_id", sessionId);
+      localStorage.setItem("session_expiration_timestamp", expirationTimestamp);
+      trackSessionStart();
+    }
+
+    return {
+      sessionId: sessionId,
+      expirationTimestamp: parseInt(expirationTimestamp),
+    };
+  }
+  // Function to check if the session is expired
+  function isSessionExpired(expirationTimestamp) {
+    return Date.now() >= expirationTimestamp;
+  }
+
+  function checkSessionStatus() {
+    var session = initializeSession();
+    if (isSessionExpired(session.expirationTimestamp)) {
+      localStorage.removeItem("session_id");
+      localStorage.removeItem("session_expiration_timestamp");
+      trackSessionEnd();
+    }
+  }
+
+  // Call checkSessionStatus() when the user lands on the website
+  checkSessionStatus();
 
   // Function to send tracking events to the endpoint
   function trigger(eventName, options) {
@@ -36,7 +61,6 @@
       event: eventName,
       url: location.href,
       domain: dataDomain,
-      sessionId: sessionId,
     };
 
     sendRequest(payload, options);
@@ -82,33 +106,4 @@
 
   // Event listener for popstate (back/forward navigation)
   window.addEventListener("popstate", trackPageView);
-
-  var inactivityTimeoutDuration = 1 * 10 * 1000;
-
-  var lastActivityTimestamp = Date.now();
-
-  // Function to check for inactivity and end session if necessary
-  function checkInactivity() {
-    var currentTime = Date.now();
-    var elapsedTime = currentTime - lastActivityTimestamp;
-
-    if (elapsedTime >= inactivityTimeoutDuration) {
-      // Inactivity timeout reached, end session
-      // Remove the session ID from localStorage
-      localStorage.removeItem("session_id");
-      trackSessionEnd();
-    }
-  }
-
-  // Event listener for user activity (e.g., mouse movement, keypress)
-  document.addEventListener("mousemove", function () {
-    lastActivityTimestamp = Date.now();
-  });
-
-  document.addEventListener("keypress", function () {
-    lastActivityTimestamp = Date.now();
-  });
-
-  // Check for inactivity periodically
-  setInterval(checkInactivity, 10000); // Check every minute
 })();

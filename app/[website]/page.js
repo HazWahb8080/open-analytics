@@ -11,14 +11,21 @@ function WebsitePage() {
   const [user] = useUser();
   const router = useRouter();
   const [pageViews, setPageViews] = useState([]);
+  const [totalVisits, setTotalVisits] = useState();
   const [loading, setLoading] = useState(true);
   const fetchViews = async () => {
     setLoading(true);
-    const { data, error } = await supabase
+    const { data: views } = await supabase
       .from("page_views")
       .select()
       .eq("domain", website);
-    setPageViews(data);
+    setPageViews(views);
+    const { data: visits } = await supabase
+      .from("websites")
+      .select()
+      .eq("website_name", website);
+    setTotalVisits(visits[0]?.total_visits);
+    console.log(visits);
     setLoading(false);
   };
 
@@ -99,12 +106,20 @@ function WebsitePage() {
           >
             refresh
           </button>
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 w-full gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 w-full lg:w-3/4 gap-6 pt-12">
             <div className="bg-black border-white/5 border text-white text-center">
-              <p className="font-bold py-4  w-full text-center border-b border-white/5">
+              <p className="text-white/70 font-medium py-8 w-full text-center border-b border-white/5">
                 TOTAL VISITS
               </p>
-              <p className="py-8 text-3xl bg-[#050505]">
+              <p className="py-12 text-3xl lg:text-4xl font-bold bg-[#050505]">
+                {abbreviateNumber(totalVisits)}
+              </p>
+            </div>
+            <div className="bg-black border-white/5 border text-white text-center">
+              <p className="font-medium text-white/70 py-8  w-full text-center border-b border-white/5">
+                Page Views
+              </p>
+              <p className="py-12 text-3xl lg:text-4xl font-bold bg-[#050505]">
                 {abbreviateNumber(pageViews?.length)}
               </p>
             </div>
