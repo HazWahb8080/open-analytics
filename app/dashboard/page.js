@@ -23,6 +23,10 @@ function DashboardPage() {
     if (!user || !supabase) return;
     fetchWebsites();
   }, [user, supabase]);
+  useEffect(() => {
+    if (!user) return;
+    if (user == "no user") router.push("/signin");
+  }, [user]);
   return (
     <Wrapper>
       <Header />
