@@ -38,4 +38,7 @@
     @apply text-white text-white/70 py-6 
               w-full text-center border-b border-white/5;
   }
+  .filter_tab_item {
+    @apply bg-black smooth hover:bg-[#050505] text-white;
+  }
 }

@@ -15,6 +15,14 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Separator } from "@radix-ui/react-dropdown-menu";
 
 function WebsitePage() {
   const { website } = useParams();
@@ -28,6 +36,7 @@ function WebsitePage() {
   const [groupedPageSources, setGroupedPageSources] = useState([]);
   const [groupedCustomEvents, setGroupedCustomEvents] = useState([]);
   const [activeCustomEventTab, setActiveCustomEventTab] = useState("");
+  const [filterValue, setFilterValue] = useState(0);
   useEffect(() => {
     //   make sure the user is loggedin first
     if (!user) return;
@@ -48,16 +57,41 @@ function WebsitePage() {
     };
     checkWebsiteCurrentUser();
   }, [user]);
-  const fetchViews = async () => {
+  const fetchViews = async (filter_duration) => {
     setLoading(true);
+    const ThatTimeAgo = new Date();
+    if (filter_duration) {
+      const onlyNumber_filter_duration = parseInt(
+        filter_duration.match(/\d+/)[0]
+      );
+      ThatTimeAgo.setDate(ThatTimeAgo.getDate() - onlyNumber_filter_duration);
+    }
     try {
       // Send multiple requests in parallel using Promise.all()
       const [viewsResponse, visitsResponse, customEventsResponse] =
-        await Promise.all([
-          supabase.from("page_views").select().eq("domain", website),
-          supabase.from("visits").select().eq("website_id", website),
-          supabase.from("events").select().eq("website_id", website),
-        ]);
+        filter_duration
+          ? await Promise.all([
+              supabase
+                .from("page_views")
+                .select()
+                .eq("domain", website)
+                .filter("created_at", "gte", ThatTimeAgo.toISOString()),
+              supabase
+                .from("visits")
+                .select()
+                .eq("website_id", website)
+                .filter("created_at", "gte", ThatTimeAgo.toISOString()),
+              supabase
+                .from("events")
+                .select()
+                .eq("website_id", website)
+                .filter("created_at", "gte", ThatTimeAgo.toISOString()),
+            ])
+          : await Promise.all([
+              supabase.from("page_views").select().eq("domain", website),
+              supabase.from("visits").select().eq("website_id", website),
+              supabase.from("events").select().eq("website_id", website),
+            ]);
 
       // Extract data from responses
       const views = viewsResponse.data;
@@ -137,6 +171,7 @@ function WebsitePage() {
     if (!supabase || !website) return;
     // refreshing the page after 30 seconds to pull updated numbers
     setInterval(() => {
+      setFilterValue(0);
       fetchViews();
     }, 30000);
   }, [website, supabase]);
@@ -168,18 +203,18 @@ function WebsitePage() {
             <button className="button" onClick={() => window.location.reload()}>
               refresh
             </button>
-          </div>
-          <div className="w-3/4 md:w-[50%] z-40 fixed bottom-4">
-            <textarea
-              type="text"
-              className="input text-white/20 cursor-pointer"
-              disabled
-              value={`<script defer data-domain="${website}" src="https://openanalytics.hazembuilds.com/tracking-script.js"></script>`}
-            />
-            <p className="text-xs text-white/20 pt-2 font-light">
-              Paste this snippet in the{" "}
-              <b className="text-red-600">{"<head>"}</b> of your website.
-            </p>
+            <div className="w-full md:w-2/3 z-40 bg-[#050505] p-6">
+              <textarea
+                type="text"
+                className="input text-white/20 cursor-pointer"
+                disabled
+                value={`<script defer data-domain="${website}" src="https://openanalytics.hazembuilds.com/tracking-script.js"></script>`}
+              />
+              <p className="text-xs text-white/20 pt-2 font-light">
+                Paste this snippet in the{" "}
+                <b className="text-red-600">{"<head>"}</b> of your website.
+              </p>
+            </div>
           </div>
         </div>
       ) : (
@@ -188,12 +223,52 @@ function WebsitePage() {
           className="z-40 w-[95%] md:w-3/4 lg:w-2/3 min-h-screen py-6 border-x border-white/5
         items-center justify-start flex flex-col"
         >
-          <button
-            className="text-white w-full items-end justify-end flex px-12"
-            onClick={fetchViews}
-          >
-            <ArrowPathIcon className="h-4 w-4 stroke-white/60 hover:stroke-white smooth" />
-          </button>
+          <span className="text-white w-full items-center justify-end flex px-12 space-x-5">
+            <Select
+              onValueChange={(value) => {
+                fetchViews(value);
+                setFilterValue(value);
+              }}
+            >
+              <SelectTrigger
+                className="w-[180px] border border-white/5 
+              outline-none hover:border-white/20 smooth"
+              >
+                <SelectValue
+                  placeholder={filterValue ? filterValue : "lifetime"}
+                  className="text-white"
+                />
+              </SelectTrigger>
+              <SelectContent
+                className="bg-black border
+               border-white/10 bg-opacity-20 filter backdrop-blur-lg"
+              >
+                <SelectItem className="filter_tab_item" value={0}>
+                  LifeTime
+                </SelectItem>
+                <SelectItem className="filter_tab_item" value="last 7 days">
+                  Last 7 days
+                </SelectItem>
+                <SelectItem className="filter_tab_item" value="last 30 days">
+                  Last 30 days
+                </SelectItem>
+                <SelectItem className="filter_tab_item" value="last 60 days">
+                  Last 60 days
+                </SelectItem>
+                <SelectItem className="filter_tab_item" value="last 90 days">
+                  Last 90 days
+                </SelectItem>
+                <SelectItem className="filter_tab_item" value="last 180 days">
+                  Last 180 days
+                </SelectItem>
+              </SelectContent>
+            </Select>
+
+            <ArrowPathIcon
+              onClick={() => fetchViews()}
+              className="h-4 w-4 stroke-white/60 hover:stroke-white smooth cursor-pointer z-50"
+            />
+          </span>
           <div className="w-full items-center justify-center flex">
             <Tabs
               defaultValue="general"
@@ -313,6 +388,8 @@ function WebsitePage() {
                         )
                       )}
                     </CarouselContent>
+                    <CarouselPrevious />
+                    <CarouselNext />
                   </Carousel>
                 )}
                 {/* display events with messages */}
