@@ -53,7 +53,8 @@ function SettingsPage() {
     navigator.clipboard.writeText(apiKey);
     alert("API key copied to clipboard!");
   };
-  const url = "https://openanalytics.hazembuilds.com/api/events";
+  // const url = "https://openanalytics.hazembuilds.com/api/events";
+  const url = "http://localhost:3000/api/events";
 
   // Example headers (including the API key)
   const headers = {
@@ -61,8 +62,9 @@ function SettingsPage() {
     Authorization: `Bearer ${apiKey}`,
   };
   const eventData = {
-    name: "Churned Users",
-    domain: "dayrh2.com",
+    name: "Signups",
+    domain: "dashboard-3-beta.vercel.app",
+    description: `user  ${user?.email} just signed up `,
   };
 
   const sendRequest = async () => {

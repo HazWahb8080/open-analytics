@@ -14,7 +14,7 @@ export async function OPTIONS(request) {
 export async function POST(req) {
   try {
     const authHeader = headers().get("authorization");
-    const { name, domain } = await req.json();
+    const { name, domain, description } = await req.json();
     if (authHeader && authHeader.startsWith("Bearer ")) {
       const apiKey = authHeader.split("Bearer ")[1];
       const { data, error } = await supabase
@@ -22,26 +22,35 @@ export async function POST(req) {
         .select()
         .eq("api", apiKey);
       if (data.length > 0) {
-        const { data: events, error: errorMessage } = await supabase
-          .from("events")
-          .insert([
-            {
-              event_name: name,
-              website_id: domain,
-            },
-          ]);
-        if (errorMessage) {
+        if (name.trim() == "" || domain.trim() == "") {
           return NextResponse.json(
-            { error: errorMessage },
+            { error: "name or domain fields must not be empty." },
             { status: 400 },
             { headers: corsHeaders }
           );
         } else {
-          return NextResponse.json(
-            { message: "success" },
-            { status: 200 },
-            { headers: corsHeaders }
-          );
+          const { data: events, error: errorMessage } = await supabase
+            .from("events")
+            .insert([
+              {
+                event_name: name,
+                website_id: domain,
+                message: description,
+              },
+            ]);
+          if (errorMessage) {
+            return NextResponse.json(
+              { error: errorMessage },
+              { status: 400 },
+              { headers: corsHeaders }
+            );
+          } else {
+            return NextResponse.json(
+              { message: "success" },
+              { status: 200 },
+              { headers: corsHeaders }
+            );
+          }
         }
       }
     } else {

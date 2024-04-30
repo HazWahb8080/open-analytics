@@ -14,7 +14,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <Script
         defer
-        data-domain="openanalytics.hazembuilds.com"
+        data-domain="hazembuilds.com"
         src="https://openanalytics.hazembuilds.com/tracking-script.js"
       />
       <body className={inter.className}>{children}</body>

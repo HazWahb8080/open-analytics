@@ -8,6 +8,13 @@ import useUser from "@/hooks/useUser";
 import Header from "../comps/Header";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 function WebsitePage() {
   const { website } = useParams();
@@ -19,7 +26,8 @@ function WebsitePage() {
   const [loading, setLoading] = useState(true);
   const [groupedPageViews, setGroupedPageViews] = useState([]);
   const [groupedPageSources, setGroupedPageSources] = useState([]);
-  const [activeTab, setActiveTab] = useState("general");
+  const [groupedCustomEvents, setGroupedCustomEvents] = useState([]);
+  const [activeCustomEventTab, setActiveCustomEventTab] = useState("");
   useEffect(() => {
     //   make sure the user is loggedin first
     if (!user) return;
@@ -61,8 +69,9 @@ function WebsitePage() {
       setGroupedPageViews(groupPageViews(views));
       setTotalVisits(visits);
       setGroupedPageSources(groupPageSources(visits));
+      setCustomEvents(customEventsData);
       // grouping the customEvent by name
-      setCustomEvents(
+      setGroupedCustomEvents(
         customEventsData.reduce((acc, event) => {
           acc[event.event_name] = (acc[event.event_name] || 0) + 1;
           return acc;
@@ -117,7 +126,13 @@ function WebsitePage() {
       visits: groupedPageSources[source],
     }));
   }
+  const formatTimeStampz = (date) => {
+    const timestamp = new Date(date);
 
+    // Step 2: Format the Date object into a human-readable format
+    const formattedTimestamp = timestamp.toLocaleString();
+    return formattedTimestamp;
+  };
   useEffect(() => {
     if (!supabase || !website) return;
     // refreshing the page after 30 seconds to pull updated numbers
@@ -139,7 +154,7 @@ function WebsitePage() {
   return (
     <Wrapper>
       <Header />
-      {pageViews.length == 0 && !loading ? (
+      {pageViews?.length == 0 && !loading ? (
         <div
           className="w-full items-center justify-center flex
          flex-col space-y-6 z-40 relative min-h-screen px-4"
@@ -169,14 +184,17 @@ function WebsitePage() {
         </div>
       ) : (
         // let's monitor
-        <div className="z-40 w-full min-h-screen py-6 items-center justify-start flex flex-col">
+        <div
+          className="z-40 w-[95%] md:w-3/4 lg:w-2/3 min-h-screen py-6 border-x border-white/5
+        items-center justify-start flex flex-col"
+        >
           <button
             className="text-white w-full items-end justify-end flex px-12"
             onClick={fetchViews}
           >
             <ArrowPathIcon className="h-4 w-4 stroke-white/60 hover:stroke-white smooth" />
           </button>
-          <div className="w-3/4 lg:w-2/3 items-center justify-center flex">
+          <div className="w-full items-center justify-center flex">
             <Tabs
               defaultValue="general"
               className="w-full items-center justify-center flex flex-col"
@@ -186,8 +204,9 @@ function WebsitePage() {
                 <TabsTrigger value="custom Events">custom Events</TabsTrigger>
               </TabsList>
               <TabsContent className="w-full" value="general">
+                <div className="w-full"></div>
                 <div
-                  className="w-full grid grid-cols-1 md:grid-cols-2
+                  className="w-full grid grid-cols-1 md:grid-cols-2 px-4
            gap-6"
                 >
                   <div className="bg-black border-white/5 border text-white text-center">
@@ -207,78 +226,134 @@ function WebsitePage() {
                     </p>
                   </div>
                 </div>
-              </TabsContent>
-              <TabsContent className="w-full" value="custom Events">
                 <div
-                  className="w-full grid grid-cols-1 md:grid-cols-2 
-          gap-6"
+                  className="items-center justify-center grid grid-cols-1 bg-black 
+           lg:grid-cols-2 mt-12 w-full border-y border-white/5"
                 >
-                  {customEvents &&
-                    Object.entries(customEvents).map(([eventName, count]) => (
+                  {/* top pages */}
+                  <div className="flex flex-col bg-black z-40 h-full w-full">
+                    <h1 className="label">Top Pages</h1>
+                    {groupedPageViews.map((view) => (
                       <div
-                        key={eventName}
-                        className="bg-black border-white/5 border text-white text-center"
+                        key={view}
+                        className="text-white w-full items-center justify-between 
+                  px-6 py-4 border-b border-white/5 flex"
                       >
-                        <p
-                          className="text-white/70 font-medium py-8
-                       w-full text-center border-b border-white/5"
-                        >
-                          {eventName}
+                        <p className="text-white/70 font-light">/{view.page}</p>
+                        <p className="">{abbreviateNumber(view.visits)}</p>
+                      </div>
+                    ))}
+                  </div>
+                  {/* top sources */}
+                  <div
+                    className="flex flex-col bg-black z-40 h-full w-full
+             lg:border-l border-t lg:border-t-0 border-white/5"
+                  >
+                    <h1 className="label relative">
+                      Top Visit Sources
+                      <p className="absolute bottom-2 right-2 text-[10px] italic font-light">
+                        add ?utm={"{source}"} to track
+                      </p>
+                    </h1>
+                    {groupedPageSources.map((pageSource) => (
+                      <div
+                        key={pageSource}
+                        className="text-white w-full items-center justify-between 
+                  px-6 py-4 border-b border-white/5 flex"
+                      >
+                        <p className="text-white/70 font-light">
+                          /{pageSource.source}
                         </p>
-                        <p className="py-12 text-3xl lg:text-4xl font-bold bg-[#050505]">
-                          {count}
+                        <p className="text-white/70 font-light">
+                          <p className="">
+                            {abbreviateNumber(pageSource.visits)}
+                          </p>
                         </p>
                       </div>
                     ))}
+                  </div>
+                </div>
+              </TabsContent>
+              <TabsContent className="w-full" value="custom Events">
+                {/* grid of customEvents */}
+                {groupedCustomEvents && (
+                  <Carousel className="w-full px-4">
+                    <CarouselContent>
+                      {Object.entries(groupedCustomEvents).map(
+                        ([eventName, count]) => (
+                          <CarouselItem
+                            key={`${eventName}-${count}`}
+                            className="basis-1/2"
+                          >
+                            <div
+                              className={`bg-black smooth group hover:border-white/10
+                             text-white text-center border ${
+                               activeCustomEventTab == eventName
+                                 ? "border-white/10"
+                                 : "border-white/5 cursor-pointer"
+                             } `}
+                              onClick={() => setActiveCustomEventTab(eventName)}
+                            >
+                              <p
+                                className={`text-white/70 font-medium py-8 w-full
+                                 group-hover:border-white/10
+                                smooth text-center border-b ${
+                                  activeCustomEventTab == eventName
+                                    ? "border-white/10"
+                                    : "border-white/5 cursor-pointer"
+                                }`}
+                              >
+                                {eventName}
+                              </p>
+                              <p className="py-12 text-3xl lg:text-4xl font-bold bg-[#050505]">
+                                {count}
+                              </p>
+                            </div>
+                          </CarouselItem>
+                        )
+                      )}
+                    </CarouselContent>
+                  </Carousel>
+                )}
+                {/* display events with messages */}
+                <div
+                  className="items-center justify-center bg-black mt-12
+                 w-full border-y border-white/5 relative"
+                >
+                  {activeCustomEventTab !== "" && (
+                    <button
+                      className="button absolute right-0 z-50"
+                      onClick={() => setActiveCustomEventTab("")}
+                    >
+                      all
+                    </button>
+                  )}
+                  <div className="flex flex-col bg-black z-40 h-full w-full">
+                    {customEvents
+                      .filter((item) =>
+                        activeCustomEventTab
+                          ? item.event_name == activeCustomEventTab
+                          : item
+                      )
+                      .map((event) => (
+                        <div
+                          key={event.id}
+                          className={`text-white w-full items-start justify-start 
+                  px-6 py-12 border-b border-white/5 flex flex-col relative`}
+                        >
+                          <p className="text-white/70 font-light pb-3">
+                            {event.event_name}
+                          </p>
+                          <p className="">{event.message}</p>
+                          <p className="italic absolute right-2 bottom-2 text-xs text-white/50">
+                            {formatTimeStampz(event.timestamp)}
+                          </p>
+                        </div>
+                      ))}
+                  </div>
                 </div>
               </TabsContent>
             </Tabs>
-          </div>
-
-          <div
-            className="items-center justify-center grid grid-cols-1 bg-black 
-           lg:grid-cols-2 mt-12 w-full lg:w-3/4 border-y border-white/5"
-          >
-            {/* top pages */}
-            <div className="flex flex-col bg-black z-40 h-full w-full">
-              <h1 className="label">Top Pages</h1>
-              {groupedPageViews.map((view) => (
-                <div
-                  key={view}
-                  className="text-white w-full items-center justify-between 
-                  px-6 py-4 border-b border-white/5 flex"
-                >
-                  <p className="text-white/70 font-light">/{view.page}</p>
-                  <p className="">{abbreviateNumber(view.visits)}</p>
-                </div>
-              ))}
-            </div>
-            {/* top sources */}
-            <div
-              className="flex flex-col bg-black z-40 h-full w-full
-             lg:border-l border-t lg:border-t-0 border-white/5"
-            >
-              <h1 className="label relative">
-                Top Visit Sources
-                <p className="absolute bottom-2 right-2 text-[10px] italic font-light">
-                  add ?utm={"{source}"} to track
-                </p>
-              </h1>
-              {groupedPageSources.map((pageSource) => (
-                <div
-                  key={pageSource}
-                  className="text-white w-full items-center justify-between 
-                  px-6 py-4 border-b border-white/5 flex"
-                >
-                  <p className="text-white/70 font-light">
-                    /{pageSource.source}
-                  </p>
-                  <p className="text-white/70 font-light">
-                    <p className="">{abbreviateNumber(pageSource.visits)}</p>
-                  </p>
-                </div>
-              ))}
-            </div>
           </div>
         </div>
       )}
