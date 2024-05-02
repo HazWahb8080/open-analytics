@@ -67,7 +67,7 @@ function Header() {
            text-white bg-opacity-20 backdrop-blur-md filter"
           >
             <DropdownMenuLabel className="text-white">
-              My Account
+              settings
             </DropdownMenuLabel>
             <DropdownMenuSeparator className="bg-white/5" />
             <Link href="/settings" prefetch>
@@ -75,22 +75,18 @@ function Header() {
                 className="text-white/60
              smooth cursor-pointer rounded-md"
               >
-                settings
+                API
+              </DropdownMenuItem>
+            </Link>
+            <Link href="/settings" prefetch>
+              <DropdownMenuItem
+                className="text-white/60
+             smooth cursor-pointer rounded-md"
+              >
+                Guide
               </DropdownMenuItem>
             </Link>
 
-            <DropdownMenuItem
-              className="text-white/60
-             smooth cursor-pointer rounded-md"
-            >
-              Billing
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              className="text-white/60
-             smooth cursor-pointer rounded-md"
-            >
-              Team
-            </DropdownMenuItem>
             <DropdownMenuSeparator className="bg-white/5" />
             <DropdownMenuItem
               onClick={logOut}

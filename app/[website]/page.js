@@ -180,7 +180,10 @@ function WebsitePage() {
     return (
       <Wrapper>
         <Header />
-        <div className="min-h-screen w-full items-center justify-center flex text-white relative">
+        <div
+          className="min-h-screen w-full items-center justify-center
+         flex text-white relative"
+        >
           loading...
         </div>
       </Wrapper>
