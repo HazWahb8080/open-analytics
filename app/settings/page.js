@@ -53,10 +53,9 @@ function SettingsPage() {
     navigator.clipboard.writeText(apiKey);
     alert("API key copied to clipboard!");
   };
-  // const url = "https://openanalytics.hazembuilds.com/api/events";
-  const url = "http://localhost:3000/api/events";
+  // const url = "http://localhost:3000/api/events";
 
-  // Example headers (including the API key)
+  const url = "https://openanalytics.hazembuilds.com/api/events";
   const headers = {
     "Content-Type": "application/json",
     Authorization: `Bearer ${apiKey}`,

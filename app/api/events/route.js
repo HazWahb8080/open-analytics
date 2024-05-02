@@ -33,7 +33,7 @@ export async function POST(req) {
             .from("events")
             .insert([
               {
-                event_name: name,
+                event_name: name.toLowerCase(),
                 website_id: domain,
                 message: description,
               },
