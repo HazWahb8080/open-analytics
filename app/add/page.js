@@ -94,7 +94,7 @@ function OnBoardingPage() {
             </span>
             <button
               className="button"
-              onClick={() => router.push(`/${website.trim()}`)}
+              onClick={() => router.push(`/w/${website.trim()}`)}
             >
               added
             </button>

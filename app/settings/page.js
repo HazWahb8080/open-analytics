@@ -139,7 +139,7 @@ function SettingsPage() {
 
 export default SettingsPage;
 
-const CodeComp = () => {
+export const CodeComp = () => {
   let codeString = `
  const url = "https://openanalytics.hazembuilds.com/api/events";
   const headers = {

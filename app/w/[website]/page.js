@@ -2,10 +2,8 @@
 "use client";
 import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import Wrapper from "../comps/Wrapper";
 import supabase from "@/config/Supabase_Client";
 import useUser from "@/hooks/useUser";
-import Header from "../comps/Header";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -22,7 +20,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Separator } from "@radix-ui/react-dropdown-menu";
+import Wrapper from "@/app/comps/Wrapper";
+import Header from "@/app/comps/Header";
 
 function WebsitePage() {
   const { website } = useParams();
@@ -297,7 +296,7 @@ function WebsitePage() {
                   </div>
                   <div className="bg-black border-white/5 border text-white text-center">
                     <p className="font-medium text-white/70 py-8  w-full text-center border-b border-white/5">
-                      Page Views
+                      PAGE VIEWS
                     </p>
                     <p className="py-12 text-3xl lg:text-4xl font-bold bg-[#050505]">
                       {abbreviateNumber(pageViews?.length)}

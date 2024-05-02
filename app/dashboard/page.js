@@ -46,7 +46,7 @@ function DashboardPage() {
        w-full p-6 gap-10 z-40 "
         >
           {websites.map((website) => (
-            <Link key={website.id} href={`/${website.website_name}`}>
+            <Link key={website.id} href={`/w/${website.website_name}`}>
               <div
                 className="border border-white/5 rounded-md py-12 px-6
              text-white bg-black w-full cursor-pointer smooth
