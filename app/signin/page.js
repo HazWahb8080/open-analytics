@@ -12,9 +12,22 @@ function SignInPage() {
   const router = useRouter();
   //   signin the user with google provider
   const signIn = async () => {
-    await supabase.auth.signInWithOAuth({
-      provider: "google",
-    });
+    if (typeof window !== "undefined") {
+      const protocol = window.location.protocol;
+      const hostname = window.location.hostname;
+
+      // Check if hostname is localhost to determine protocol
+      const redirectTo =
+        hostname === "localhost"
+          ? `${protocol}//${hostname}:3000/dashboard`
+          : `${protocol}//${hostname}/dashboard`;
+      await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: redirectTo,
+        },
+      });
+    }
   };
   //   check if the user is logged in already and redirect if necassary
   const catchUser = async () => {
