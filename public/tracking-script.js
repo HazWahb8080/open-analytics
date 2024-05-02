@@ -117,10 +117,12 @@
   // Event listener for hashchange (hash-based navigation)
   window.addEventListener("hashchange", trackPageView);
   document.addEventListener("click", function (event) {
-    if (window.location.pathname !== initialPathname) {
-      trackPageView();
-      // Update the initialPathname for future comparisons
-      initialPathname = window.location.pathname;
-    }
+    setTimeout(() => {
+      if (window.location.pathname !== initialPathname) {
+        trackPageView();
+        // Update the initialPathname for future comparisons
+        initialPathname = window.location.pathname;
+      }
+    }, 3000);
   });
 })();

@@ -46,7 +46,7 @@ function OnBoardingPage() {
       <Logo size="lg" />
       <div
         className="items-center justify-center p-12
-      flex flex-col w-full md:w-3/4 z-50 border-y
+      flex flex-col w-full z-0 border-y
        border-white/5 bg-black text-white"
       >
         {step == 1 ? (
@@ -57,17 +57,14 @@ function OnBoardingPage() {
               </p>
               <input
                 value={website}
-                onChange={(e) => setWebsite(e.target.value)}
+                onChange={(e) =>
+                  setWebsite(e.target.value.trim().toLowerCase())
+                }
                 type="text"
                 className="input"
               />
               {error ? (
-                <p
-                  className="text-xs text-white/20 pt-2 font-light
-                 text-red-400"
-                >
-                  {error}
-                </p>
+                <p className="text-xs pt-2 font-light text-red-400">{error}</p>
               ) : (
                 <p className="text-xs text-white/20 pt-2 font-light">
                   enter the domain or subdomain without {"www"}
@@ -80,7 +77,7 @@ function OnBoardingPage() {
           </div>
         ) : (
           <div className="w-full items-center justify-center flex flex-col space-y-10">
-            <span className="w-full lg:w-[50%] ">
+            <span className="w-full lg:w-[50%]">
               <textarea
                 type="text"
                 className="input text-white/20 cursor-pointer"
