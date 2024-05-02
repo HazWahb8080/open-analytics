@@ -106,9 +106,9 @@ function SettingsPage() {
         {apiKey && (
           <div
             className="mt-12 border-white/5 border
-           bg-black space-y-5 py-12 px-4 w-full md:w-3/4 lg:w-1/2"
+           bg-black space-y-12 py-12 w-full md:w-3/4 lg:w-1/2"
           >
-            <div className="space-y-12">
+            <div className="space-y-12 px-4">
               <p>Your API Key:</p>
               <input
                 className="input-disabled"
@@ -121,8 +121,13 @@ function SettingsPage() {
                 Copy API Key
               </button>
             </div>
-            <div className="border-white/5 border p-6">
-              <CodeComp />
+            <div className="space-y-4 border-t border-white/5 bg-black p-6">
+              <h1 className="text-lg p-4 bg-[#0f0f0f70]">
+                You can create custom events using our api like below
+              </h1>
+              <div className="">
+                <CodeComp />
+              </div>
             </div>
           </div>
         )}
@@ -142,9 +147,9 @@ const CodeComp = () => {
     Authorization: "Bearer {{apiKey}}",
   };
   const eventData = {
-    name: "",
-    domain: "",
-    description: "",
+    name: "",//* required
+    domain: "", //* required
+    description: "",//optional
   };
 
   const sendRequest = async () => {
