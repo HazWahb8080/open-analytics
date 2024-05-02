@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/select";
 import Wrapper from "@/app/comps/Wrapper";
 import Header from "@/app/comps/Header";
+import Snippet from "@/app/comps/Snippet";
 
 function WebsitePage() {
   const { website } = useParams();
@@ -205,17 +206,8 @@ function WebsitePage() {
             <button className="button" onClick={() => window.location.reload()}>
               refresh
             </button>
-            <div className="w-full md:w-2/3 z-40 bg-[#050505] p-6">
-              <textarea
-                type="text"
-                className="input text-white/20 cursor-pointer"
-                disabled
-                value={`<script defer data-domain="${website}" src="https://openanalytics.hazembuilds.com/tracking-script.js"></script>`}
-              />
-              <p className="text-xs text-white/20 pt-2 font-light">
-                Paste this snippet in the{" "}
-                <b className="text-red-600">{"<head>"}</b> of your website.
-              </p>
+            <div className="w-full md:w-3/4 z-40 pb-6 border border-white/5 mt-12s">
+              <Snippet />
             </div>
           </div>
         </div>

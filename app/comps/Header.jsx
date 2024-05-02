@@ -28,9 +28,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import supabase from "@/config/Supabase_Client";
-import SyntaxHighlighter from "react-syntax-highlighter/dist/esm/default-highlight";
-import { sunburst } from "react-syntax-highlighter/dist/esm/styles/hljs";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Snippet from "./Snippet";
 
 function Header() {
   const [user] = useUser();
@@ -46,13 +44,6 @@ function Header() {
     return <></>;
   }
 
-  const JS_codeString = `<script defer data-domain="${website}" src="https://openanalytics.hazembuilds.com/tracking-script.js"></script>`;
-  const NextJS_codeString = `
-<Script
-defer
-data-domain="${website}"
-src="https://openanalytics.hazembuilds.com/tracking-script.js"/>
-   `;
   return (
     <div
       className="w-full border-b border-white/5 sticky top-0 bg-black z-50
@@ -80,49 +71,7 @@ src="https://openanalytics.hazembuilds.com/tracking-script.js"/>
                       className="items-center
                      justify-center flex border border-white/5 "
                     >
-                      <Tabs
-                        defaultValue="Js/React"
-                        className="w-full space-y-5"
-                      >
-                        <TabsList
-                          className="w-full bg-black rounded-none space-x-5
-                         bg-white/5 items-center justify-center flex"
-                        >
-                          <TabsTrigger
-                            value="Js/React"
-                            className="rounded-none"
-                          >
-                            Js/React
-                          </TabsTrigger>
-                          <TabsTrigger className="rounded-none" value="Nextjs">
-                            Nextjs
-                          </TabsTrigger>
-                        </TabsList>
-                        <TabsContent value="Js/React" className="p-4">
-                          <b className="text-red-500 font-normal italic">
-                            inside index.html
-                          </b>
-                          <SyntaxHighlighter
-                            wrapLongLines
-                            language="javascript"
-                            style={sunburst}
-                          >
-                            {JS_codeString}
-                          </SyntaxHighlighter>
-                        </TabsContent>
-                        <TabsContent value="Nextjs" className="p-4">
-                          <b className="text-red-500 font-normal italic">
-                            inside app/layout.js
-                          </b>
-                          <SyntaxHighlighter
-                            wrapLongLines
-                            language="javascript"
-                            style={sunburst}
-                          >
-                            {NextJS_codeString}
-                          </SyntaxHighlighter>
-                        </TabsContent>
-                      </Tabs>
+                      <Snippet />
                     </DialogDescription>
                   </DialogHeader>
                 </DialogContent>
