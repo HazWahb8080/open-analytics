@@ -7,6 +7,8 @@ import supabase from "@/config/Supabase_Client";
 import useUser from "@/hooks/useUser";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import SyntaxHighlighter from "react-syntax-highlighter";
+import { sunburst } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
 function SettingsPage() {
   const [apiKey, setApiKey] = useState("");
@@ -106,23 +108,56 @@ function SettingsPage() {
             className="mt-12 border-white/5 border
            bg-black space-y-5 py-12 px-4 w-full md:w-3/4 lg:w-1/2"
           >
-            <p>Your API Key:</p>
-            <input
-              className="input-disabled"
-              type="text"
-              value={apiKey}
-              readOnly
-              disabled
-            />
-            <button onClick={copyApiKey} className="button">
-              Copy API Key
-            </button>
+            <div className="space-y-12">
+              <p>Your API Key:</p>
+              <input
+                className="input-disabled"
+                type="text"
+                value={apiKey}
+                readOnly
+                disabled
+              />
+              <button onClick={copyApiKey} className="button">
+                Copy API Key
+              </button>
+            </div>
+            <div className="border-white/5 border p-6">
+              <CodeComp />
+            </div>
           </div>
         )}
-        <button onClick={sendRequest}>send</button>
+        {/* <button onClick={sendRequest}>send</button> */}
       </div>
     </Wrapper>
   );
 }
 
 export default SettingsPage;
+
+const CodeComp = () => {
+  let codeString = `
+ const url = "https://openanalytics.hazembuilds.com/api/events";
+  const headers = {
+    "Content-Type": "application/json",
+    Authorization: "Bearer {{apiKey}}",
+  };
+  const eventData = {
+    name: "",
+    domain: "",
+    description: "",
+  };
+
+  const sendRequest = async () => {
+    axios
+      .post(url, eventData, { headers })
+      .then()
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };`;
+  return (
+    <SyntaxHighlighter language="javascript" style={sunburst}>
+      {codeString}
+    </SyntaxHighlighter>
+  );
+};
