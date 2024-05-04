@@ -345,7 +345,7 @@ function WebsitePage() {
               </TabsContent>
               <TabsContent className="w-full" value="custom Events">
                 {/* grid of customEvents */}
-                {groupedCustomEvents && groupedCustomEvents.length > 0 && (
+                {groupedCustomEvents && (
                   <Carousel className="w-full px-4">
                     <CarouselContent>
                       {Object.entries(groupedCustomEvents).map(
