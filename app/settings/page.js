@@ -57,7 +57,7 @@ function SettingsPage() {
   };
   // const url = "http://localhost:3000/api/events";
 
-  const url = "https://openanalytics.hazembuilds.com/api/events";
+  const url = "https://monitoryour.website/api/events";
   const headers = {
     "Content-Type": "application/json",
     Authorization: `Bearer ${apiKey}`,
@@ -141,7 +141,7 @@ export default SettingsPage;
 
 export const CodeComp = () => {
   let codeString = `
- const url = "https://openanalytics.hazembuilds.com/api/events";
+ const url = "https://monitoryour.website/api/events";
   const headers = {
     "Content-Type": "application/json",
     Authorization: "Bearer {{apiKey}}",
