@@ -6,7 +6,7 @@ import Header from "../comps/Header";
 import supabase from "@/config/Supabase_Client";
 import useUser from "@/hooks/useUser";
 import axios from "axios";
-import { useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { sunburst } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
@@ -14,10 +14,9 @@ function SettingsPage() {
   const [apiKey, setApiKey] = useState("");
   const [loading, setLoading] = useState(true);
   const [user] = useUser();
-  const router = useRouter();
   useEffect(() => {
     if (!user) return;
-    if (user == "no user") router.push("/signin");
+    if (user == "no user") redirect("/signin");
   }, [user]);
 
   const generateApiKey = async () => {
@@ -26,6 +25,7 @@ function SettingsPage() {
     const randomString =
       Math.random().toString(36).substring(2, 300) +
       Math.random().toString(36).substring(2, 300);
+
     const { data, error } = await supabase
       .from("users")
       .insert([{ api: randomString, user_id: user.id }])

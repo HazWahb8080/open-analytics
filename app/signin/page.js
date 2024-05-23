@@ -4,7 +4,7 @@
 import supabase from "@/config/Supabase_Client";
 import React, { useEffect } from "react";
 import Wrapper from "../comps/Wrapper";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import Logo from "../comps/Logo";
 import Image from "next/image";
 
@@ -35,13 +35,13 @@ function SignInPage() {
       data: { user },
     } = await supabase.auth.getUser();
     if (user) {
-      if (user.role === "authenticated") router.push("/dashboard");
+      if (user.role === "authenticated") redirect("/dashboard");
     }
   };
   useEffect(() => {
-    if (!router || !supabase) return;
+    if (!supabase) return;
     catchUser();
-  }, [router, supabase]);
+  }, [supabase]);
 
   return (
     <Wrapper>
