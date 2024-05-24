@@ -52,8 +52,8 @@ function WebsitePage() {
       data.length == 0
         ? router.push("/dashboard")
         : setTimeout(() => {
-            fetchViews();
-          }, 500);
+          fetchViews();
+        }, 500);
     };
     checkWebsiteCurrentUser();
   }, [user]);
@@ -71,27 +71,27 @@ function WebsitePage() {
       const [viewsResponse, visitsResponse, customEventsResponse] =
         filter_duration
           ? await Promise.all([
-              supabase
-                .from("page_views")
-                .select()
-                .eq("domain", website)
-                .filter("created_at", "gte", ThatTimeAgo.toISOString()),
-              supabase
-                .from("visits")
-                .select()
-                .eq("website_id", website)
-                .filter("created_at", "gte", ThatTimeAgo.toISOString()),
-              supabase
-                .from("events")
-                .select()
-                .eq("website_id", website)
-                .filter("created_at", "gte", ThatTimeAgo.toISOString()),
-            ])
+            supabase
+              .from("page_views")
+              .select()
+              .eq("domain", website)
+              .filter("created_at", "gte", ThatTimeAgo.toISOString()),
+            supabase
+              .from("visits")
+              .select()
+              .eq("website_id", website)
+              .filter("created_at", "gte", ThatTimeAgo.toISOString()),
+            supabase
+              .from("events")
+              .select()
+              .eq("website_id", website)
+              .filter("created_at", "gte", ThatTimeAgo.toISOString()),
+          ])
           : await Promise.all([
-              supabase.from("page_views").select().eq("domain", website),
-              supabase.from("visits").select().eq("website_id", website),
-              supabase.from("events").select().eq("website_id", website),
-            ]);
+            supabase.from("page_views").select().eq("domain", website),
+            supabase.from("visits").select().eq("website_id", website),
+            supabase.from("events").select().eq("website_id", website),
+          ]);
 
       // Extract data from responses
       const views = viewsResponse.data;
@@ -356,21 +356,19 @@ function WebsitePage() {
                           >
                             <div
                               className={`bg-black smooth group hover:border-white/10
-                             text-white text-center border ${
-                               activeCustomEventTab == eventName
-                                 ? "border-white/10"
-                                 : "border-white/5 cursor-pointer"
-                             } `}
+                             text-white text-center border ${activeCustomEventTab == eventName
+                                  ? "border-white/10"
+                                  : "border-white/5 cursor-pointer"
+                                } `}
                               onClick={() => setActiveCustomEventTab(eventName)}
                             >
                               <p
                                 className={`text-white/70 font-medium py-8 w-full
                                  group-hover:border-white/10
-                                smooth text-center border-b ${
-                                  activeCustomEventTab == eventName
+                                smooth text-center border-b ${activeCustomEventTab == eventName
                                     ? "border-white/10"
                                     : "border-white/5 cursor-pointer"
-                                }`}
+                                  }`}
                               >
                                 {eventName}
                               </p>
