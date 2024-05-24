@@ -16,7 +16,7 @@ function OnBoardingPage() {
   const [error, setError] = useState("");
 
   const addWebsite = async () => {
-    if (website.trim() == "" || loading || error !== "") return;
+    if (website.trim() == "" || loading) return;
     setLoading(true);
     const { data, error } = await supabase
       .from("websites")
@@ -36,7 +36,9 @@ function OnBoardingPage() {
     ) {
       setError("this domain is added before");
     } else {
+      setError("");
       addWebsite();
+
     }
   };
   useEffect(() => {
@@ -79,9 +81,9 @@ function OnBoardingPage() {
                 </p>
               )}
             </span>
-            <button className="button" onClick={checkDomainAddedBefore}>
+            {error == "" && <button className="button" onClick={checkDomainAddedBefore}>
               {loading ? "adding..." : "add website"}
-            </button>
+            </button>}
           </div>
         ) : (
           <div className="w-full items-center justify-center flex flex-col space-y-10">
