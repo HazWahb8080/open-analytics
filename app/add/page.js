@@ -16,7 +16,7 @@ function OnBoardingPage() {
   const [error, setError] = useState("");
 
   const addWebsite = async () => {
-    if (website.trim() == "" || loading) return;
+    if (website.trim() == "" || loading || error !== "") return;
     setLoading(true);
     const { data, error } = await supabase
       .from("websites")
@@ -31,7 +31,6 @@ function OnBoardingPage() {
       .from("websites")
       .select("*");
     fetchedWebites = websites;
-
     if (
       fetchedWebites.filter((item) => item.website_name == website).length > 0 // this means we have duplicates
     ) {
@@ -40,6 +39,13 @@ function OnBoardingPage() {
       addWebsite();
     }
   };
+  useEffect(() => {
+    if (/^(https?:\/\/)?([\w\d-]+\.)+[\w\d]{2,}(\/.*)?$/.test(website.trim())) {
+      setError("please enter the domain only. ie:(google.com)")
+    } else {
+      setError("")
+    }
+  }, [website])
 
   return (
     <Wrapper>
