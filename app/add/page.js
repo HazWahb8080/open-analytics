@@ -40,7 +40,9 @@ function OnBoardingPage() {
     }
   };
   useEffect(() => {
-    if (/^(https?:\/\/)?([\w\d-]+\.)+[\w\d]{2,}(\/.*)?$/.test(website.trim())) {
+    if (website.trim().includes("http") || website.trim().includes("http://")
+      || website.trim().includes("https://") || website.trim().includes("://")
+      || website.trim().includes(":") || website.trim().includes("/")) {
       setError("please enter the domain only. ie:(google.com)")
     } else {
       setError("")
