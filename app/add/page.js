@@ -38,18 +38,22 @@ function OnBoardingPage() {
     } else {
       setError("");
       addWebsite();
-
     }
   };
   useEffect(() => {
-    if (website.trim().includes("http") || website.trim().includes("http://")
-      || website.trim().includes("https://") || website.trim().includes("://")
-      || website.trim().includes(":") || website.trim().includes("/")) {
-      setError("please enter the domain only. ie:(google.com)")
+    if (
+      website.trim().includes("http") ||
+      website.trim().includes("http://") ||
+      website.trim().includes("https://") ||
+      website.trim().includes("://") ||
+      website.trim().includes(":") ||
+      website.trim().includes("/")
+    ) {
+      setError("please enter the domain only. ie:(google.com)");
     } else {
-      setError("")
+      setError("");
     }
-  }, [website])
+  }, [website]);
 
   return (
     <Wrapper>
@@ -81,9 +85,11 @@ function OnBoardingPage() {
                 </p>
               )}
             </span>
-            {error == "" && <button className="button" onClick={checkDomainAddedBefore}>
-              {loading ? "adding..." : "add website"}
-            </button>}
+            {error == "" && (
+              <button className="button" onClick={checkDomainAddedBefore}>
+                {loading ? "adding..." : "add website"}
+              </button>
+            )}
           </div>
         ) : (
           <div className="w-full items-center justify-center flex flex-col space-y-10">
@@ -92,7 +98,8 @@ function OnBoardingPage() {
                 type="text"
                 className="input text-white/20 cursor-pointer"
                 disabled
-                value={`<script defer data-domain="${website}" src="https://monitoryour.website/tracking-script.js"></script>`}
+                value={`<script defer data-domain="${website}"
+                src="https://monitoryour.website/tracking-script.js"></script>`}
               />
               <p className="text-xs text-white/20 pt-2 font-light">
                 Paste this snippet in the{" "}
